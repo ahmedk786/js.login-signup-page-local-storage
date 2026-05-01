@@ -1,78 +1,120 @@
-// Show forms
+// Switch Forms
 function showSignup() {
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("signupBox").classList.remove("hidden");
+  loginBox.classList.add("hidden");
+  signupBox.classList.remove("hidden");
 }
 
 function showLogin() {
-  document.getElementById("signupBox").classList.add("hidden");
-  document.getElementById("loginBox").classList.remove("hidden");
+  signupBox.classList.add("hidden");
+  loginBox.classList.remove("hidden");
 }
 
 // Signup
 function signup() {
-  let name = document.getElementById("signupName").value;
-  let email = document.getElementById("signupEmail").value;
-  let password = document.getElementById("signupPassword").value;
+  let name = signupName.value;
+  let email = signupEmail.value;
+  let password = signupPassword.value;
 
   if (!name || !email || !password) {
-    alert("Please fill all fields");
+    alert("Fill all fields");
     return;
   }
 
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
-  let userExists = users.find(user => user.email === email);
-  if (userExists) {
-    alert("User already exists!");
+  if (users.find(u => u.email === email)) {
+    alert("User already exists");
     return;
   }
 
   users.push({ name, email, password });
   localStorage.setItem("users", JSON.stringify(users));
 
-  alert("Signup successful!");
+  alert("Signup success");
   showLogin();
 }
 
 // Login
 function login() {
-  let email = document.getElementById("loginEmail").value;
-  let password = document.getElementById("loginPassword").value;
+  let email = loginEmail.value;
+  let password = loginPassword.value;
 
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
-  let validUser = users.find(user => user.email === email && user.password === password);
+  let user = users.find(u => u.email === email && u.password === password);
 
-  if (!validUser) {
+  if (!user) {
     alert("Invalid credentials");
     return;
   }
 
-  localStorage.setItem("loggedInUser", JSON.stringify(validUser));
-
-  showDashboard(validUser);
+  localStorage.setItem("currentUser", JSON.stringify(user));
+  loadDashboard(user);
 }
 
-// Show Dashboard
-function showDashboard(user) {
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("signupBox").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
+// Load Dashboard
+function loadDashboard(user) {
+  loginBox.classList.add("hidden");
+  signupBox.classList.add("hidden");
+  dashboard.classList.remove("hidden");
 
-  document.getElementById("userName").innerText = user.name;
+  userName.innerText = user.name;
+  loadTasks();
+}
+
+// Add Task
+function addTask() {
+  let task = taskInput.value;
+
+  if (!task) return;
+
+  let user = JSON.parse(localStorage.getItem("currentUser"));
+
+  let tasks = JSON.parse(localStorage.getItem(user.email)) || [];
+
+  tasks.push(task);
+  localStorage.setItem(user.email, JSON.stringify(tasks));
+
+  taskInput.value = "";
+  loadTasks();
+}
+
+// Load Tasks
+function loadTasks() {
+  let user = JSON.parse(localStorage.getItem("currentUser"));
+  let tasks = JSON.parse(localStorage.getItem(user.email)) || [];
+
+  taskList.innerHTML = "";
+
+  tasks.forEach((task, index) => {
+    let li = document.createElement("li");
+    li.innerHTML = `
+      ${task}
+      <button class="delete" onclick="deleteTask(${index})">X</button>
+    `;
+    taskList.appendChild(li);
+  });
+}
+
+// Delete Task
+function deleteTask(index) {
+  let user = JSON.parse(localStorage.getItem("currentUser"));
+  let tasks = JSON.parse(localStorage.getItem(user.email)) || [];
+
+  tasks.splice(index, 1);
+  localStorage.setItem(user.email, JSON.stringify(tasks));
+
+  loadTasks();
 }
 
 // Logout
 function logout() {
-  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("currentUser");
   location.reload();
 }
 
-// Auto login if already logged in
-window.onload = function () {
-  let user = JSON.parse(localStorage.getItem("loggedInUser"));
-  if (user) {
-    showDashboard(user);
-  }
+// Auto Login
+window.onload = () => {
+  let user = JSON.parse(localStorage.getItem("currentUser"));
+  if (user) loadDashboard(user);
 };
