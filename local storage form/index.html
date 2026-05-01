@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sardar Auth App</title>
+  <title>Sardar Todo App</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
 
-  <!-- Login Form -->
-  <div class="form-box" id="loginBox">
+  <!-- LOGIN -->
+  <div class="box" id="loginBox">
     <h2>Login</h2>
     <input type="email" id="loginEmail" placeholder="Email">
     <input type="password" id="loginPassword" placeholder="Password">
@@ -18,24 +18,32 @@
     <p>Don't have an account? <span onclick="showSignup()">Signup</span></p>
   </div>
 
-  <!-- Signup Form -->
-  <div class="form-box hidden" id="signupBox">
+  <!-- SIGNUP -->
+  <div class="box hidden" id="signupBox">
     <h2>Signup</h2>
-    <input type="text" id="signupName" placeholder="Full Name">
+    <input type="text" id="signupName" placeholder="Name">
     <input type="email" id="signupEmail" placeholder="Email">
     <input type="password" id="signupPassword" placeholder="Password">
     <button onclick="signup()">Signup</button>
     <p>Already have an account? <span onclick="showLogin()">Login</span></p>
   </div>
 
-  <!-- Dashboard -->
+  <!-- DASHBOARD -->
   <div class="dashboard hidden" id="dashboard">
     <h2>Welcome, <span id="userName"></span></h2>
-    <button onclick="logout()">Logout</button>
+
+    <div class="todo-input">
+      <input type="text" id="taskInput" placeholder="Enter your task...">
+      <button onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <button class="logout" onclick="logout()">Logout</button>
   </div>
 
 </div>
 
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
